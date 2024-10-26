@@ -1,0 +1,173 @@
+---
+title: "Analysis of Crime vs. Unemployment"
+author: "Group H2 (Alex Li, Xinjie Huang, Evelyn G. Salas Ramos, Dhandeep Suglani)"
+date: "3/1/2020"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+source("Script.R")
+```
+
+## Problem Domain
+In this analysis report, we analyze correlation between crime rate and unemployment rate in each county of Washington State. Crime rate is defined by number of crimes / population, the most used unit is crime rate per 100000 population. Unemployment rate is by percentage of the population in this analysis. This domain is worth analyzing because if these two elements show strong correlation, there is chance to reduce crime rate by providing more job opportunities.
+
+### The questions we discuss in this report:
+
+1. What is the relationship between crime and unemployment by county in the state of Washington?
+
+  * Directly related to the main problem we discuss.
+
+
+2. Does the unemployment rate change as robbery/burglary increases?
+
+  * Helpful to see the correlation between unemployment and certain type of crime.
+
+
+3. What crimes tend to increase the most when crime rate goes up?
+
+  * Helps prevent certain type of crimes where crime rates are high.
+
+
+4. What counties have the highest murder rate?
+
+  * Helpful to see general crime rate versus the murder rate per county.
+
+## Data Description
+
+```{r data_description, echo = FALSE}
+crime_rate_sample <- head(crime_rate_WA_df, 5)
+unemployment_sample <- head(unemployment_df, 5)
+
+```
+
+The data sets we are using are [United States crime rates by county](https://www.kaggle.com/mikejohnsonjr/united-states-crime-rates-by-county), the data of which was sourced from government census data and studies by the University of Michigan, and [USDA Unemployment](https://data.ers.usda.gov/reports.aspx?ID=17828), the data of which was sourced from government data from the United States Department of Agriculture. The samples are below:
+
+__1. United States crime rates by county__
+
+`r kable(crime_rate_sample)`
+
+  _Includes:_
+
+  - County name
+
+  - Crime rate per 100000 population
+
+  - Number of cases for each type of crime
+
+  - Population
+
+  - Crime rate per 1000000 population (used for later plot)
+
+
+__2. USDA Unemployment__
+
+`r kable(unemployment_sample)`
+
+  _Includes:_
+
+  - County name
+
+  - Unemployment rate by percentage of population
+
+### Summary Analysis
+
+__1. United States crime rates by county__
+
+`r kable(summary(crime_rate_WA_df))`
+
+This table provides statistical summary for the crime rate in WA data set, including mean, median, 1st quartile, 3rd quartile of each feature.
+
+```{r plots, echo = FALSE}
+crime_rate_plot
+population_plot
+```
+
+The population in _King County_ is much higher than other county, may largly affect the average.
+
+__2. USDA Unemployment__
+
+`r kable(summary(unemployment_df))`
+
+This table provides statistical summary for the unemployment rate in WA data set, including mean, median, 1st quartile, 3rd quartile of the unemployment rate by county.
+
+```{r unemployment_plot, echo = FALSE}
+unemployment_plot
+```
+
+The unemployment rate of _Ferry County_ is much higher than other county, may affect the average.
+
+## Specific Questions Analysis
+
+### What is the relationship between crime and unemployment by county in the state of Washington?
+
+__Introduction__: This question is dirrectly related to our topic. Looking for correlation between crime rate and unemployment rate. Crime rate in this analysis using unit by 1000000 population. Unemployment rate is by percentage of the population.
+
+__Method__: I select the crime rate and unemployment rate for each county in WA from the datasets, then plot them using both point and path geometry.
+
+__Result__:
+
+```{r q1_result, echo = FALSE}
+kable(crime_unemp_wide)
+crime_unemp_plot
+```
+
+__Evaluation__: From these two datasets, the crime rate and unemployment show no strong correlation. If there is correlation, the line plot will be relatively same length by each county, but the graph shows no similarity. By this analysis, offering job opportunities cannot solve the crime problem, government need to seek other solutions to prevent crimes.
+
+
+### Does the unemployment rate change as robbery/burglary increases?
+
+
+__Introduction__: This analysis can help understand the correlation between the number of burglary and robbery attempted crimes in a county with respect to the unemployment rate.  The unemployment rate refers to the number of individuals who are unemployed but actively looking for work. In this analysis, the attempts of robbery and burglary are combined into one variable.
+
+__Method__: In order to look at the total numbers of robbery and burglary cases, I added the two together and found one value. Choosing the top counties in terms of population for my case of study, thus providing more numbers to work with.
+
+__Result__:
+```{r q2_result, echo=FALSE}
+kable(unemp_top_pop)
+plot_unempl
+
+```
+
+_Evalutation_: Based on the graph, one can see there is no correlation between the unemployment rate and the total number of burglary/robbery attempts. For example, looking at King County which has the highest robber/burglary attempts(20,000) in all the counties has the lowest unemployment rate(3.9) compared to the other nine counties. Whereas the county with the highest unemployment rate (7.5), has a lower burglary te(which is about 3000). Using these two observations proves the point being made, which is that there is no correlation between attempts and the unemployment rate. More observations can be made which leads to the same answer as before.
+
+
+### What crimes tend to increase the most when crime rate goes up?
+
+
+_Introduction_: This analysis can help law enforcement put better preventative measures for certain crimes in counties with a high crime rate. It uses data from a data frame containing statistics for crime rates in 2016 for each Washington state county. It also contains the number of each crime type committed. 
+
+_Method_: Only data related to the population, crime types, and crime rates are needed. Finding the per capita crime rates involve finding the ratio between the number of crimes and population of each county. After this is found, each value is graphed with line and point geometry, with different colors distinguishing the types of crime. The plotting involves plotting the crime rate of the county (crimes per 1 million people) against the crimes per capita of each type of crime. The line graph shows the amount change for each crime type. 
+
+_Result_:
+Below is a sample visualization of how much murder per capita increases as crime rates rise.
+```{r q3_result, echo = FALSE}
+kable(sample_crime_vs_type_table)
+crime_vs_type_plot
+```
+
+Below is the bar graph of the changes per capita of each crime between the areas with the lowest and highest crime rates.
+```{r q3_result2, echo = FALSE}
+kable(only_minmax_change)
+change_crime_type_plot
+```
+
+_Evalutation_: Looking at the quantitative results, the table above shows that average larceny showed the greatest change from the minimum crime rate value to the maximum crime rate value. The graphical results also show this, as larceny is the crime with by far the greatest increase (graphical jump) per capita with burglary coming in second place seeing half as much increase per capita as larceny. Motor vehicle theft comes in third place while all other types of crime see similar increases per capita when taking in account their initial values. From the results, it can be reasonably concluded that theft (of any kind) is the most prevalent crime in regions where crime rate is high. Judging from the data, local police enforcement can add preventative measures such as adding more cameras in areas such as shops or neighborhoods. Home and shop owners who live in these regions should take care to install more security systems in their homes and stores to protect against theft or burglary. 
+
+
+### What counties have the highest murder rate?
+
+
+__Introduction__: The following data is helpful to understand the murder rate per county as it compares to the general crime rate.
+
+__Method__: In oder to conduct this analysis, I created a new column for the murder rate wich was equivalet to the number of murders per county divided by the population within each county.
+
+__Result__: 
+```{r q4_result, echo=FALSE}
+kable(county_murder_rate)
+crime_rate_plot_E
+murder_rate_plot
+
+```
+
+__Evaluation__: Based on the graphs, we can see that Columbia and Pend Orelle County have the highest murder rates per capita by a very large margin. This information can be useful as researchers can look further into the problems affecting these two counties in particular.
